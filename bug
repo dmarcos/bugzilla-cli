@@ -2,16 +2,31 @@
 
 var exec = require('child_process').exec;
 var openBugCommand = 'open https://bugzilla.mozilla.org/show_bug.cgi?id=';
-var currentBranchCommand = 'git branch | grep "*" | tail -c 7';
+var currentBranchCommandBase = 'git branch | grep "*" | tail -c ';
+var currentBranchCommand;
 var openBug = function(bugNumber) {
   exec(openBugCommand + bugNumber, function (error, stdout, stderr) {
     process.exit(0);
   });
 };
 
+var getBugNumber = function(command, callback) {
+  exec(command, function (error, stdout, stderr) {
+    callback(error, stdout);
+  });
+};
+
 if (process.argv.length == 2) {
-  exec(currentBranchCommand, function (error, stdout, stderr) {
-    openBug(stdout);
+  currentBranchCommand = currentBranchCommandBase + '8';
+  getBugNumber(currentBranchCommand, function(error, bugNumber) {
+    if (Number.isNaN(bugNumber)) {
+      currentBranchCommand = currentBranchCommandBase + '7';
+      getBugNumber(currentBranchCommand, function(error, bugNumber) {
+        openBug(bugNumber);
+      });
+    } else {
+      openBug(bugNumber);
+    }
   });
 } else {
   openBug(process.argv[2]);
