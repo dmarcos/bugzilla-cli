@@ -19,7 +19,7 @@ var getBugNumber = function(command, callback) {
 if (process.argv.length == 2) {
   currentBranchCommand = currentBranchCommandBase + '8';
   getBugNumber(currentBranchCommand, function(error, bugNumber) {
-    if (Number.isNaN(bugNumber)) {
+    if (isNaN(bugNumber)) {
       currentBranchCommand = currentBranchCommandBase + '7';
       getBugNumber(currentBranchCommand, function(error, bugNumber) {
         openBug(bugNumber);
